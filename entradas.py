@@ -4,8 +4,10 @@ import time
 import unicodedata
 from pushbullet import Pushbullet
 import datetime
+from datetime import timedelta
 import os
 import tempfile
+import pytz
 
 PB_API_KEY = os.environ.get("PB_API_KEY")
 pb = Pushbullet(PB_API_KEY)
@@ -31,7 +33,7 @@ driver = webdriver.Chrome(options=options)
 print("Iniciando proceso")
 
 try:
-    ahora = datetime.datetime.utcnow() - datetime.timedelta(hours=3)
+    ahora = datetime.now(pytz.timezone('America/Buenos_Aires')) - timedelta(hours=3)
     timestamp = ahora.strftime("%d%m%Y - %H:%M:%S")
 
     driver.get("https://www.allaccess.com.ar/event/oasis")
