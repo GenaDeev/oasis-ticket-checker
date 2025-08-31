@@ -1,18 +1,16 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import time
 import unicodedata
 from pushbullet import Pushbullet
 import datetime
 import os
+import tempfile
 
 PB_API_KEY = os.environ.get("PB_API_KEY")
 pb = Pushbullet(PB_API_KEY)
 
-targetTarifaName = "oasis collectors package"
+targetTarifaName = "campo general 1"
 
 def normalize(text: str) -> str:
     text = text.lower().strip()
@@ -22,11 +20,17 @@ def normalize(text: str) -> str:
     return " ".join(text.split())
 
 options = Options()
+options.add_argument("--headless=new")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument(f"--user-data-dir={tempfile.mkdtemp()}")
+options.add_argument("--disable-gpu")
+options.add_argument("--window-size=1920,1080")
+
 driver = webdriver.Chrome(options=options)
 print("Iniciando proceso")
 
 try:
-    # ts
     ahora = datetime.datetime.utcnow() - datetime.timedelta(hours=3)
     timestamp = ahora.strftime("%d%m%Y - %H:%M:%S")
 
@@ -73,7 +77,7 @@ try:
             break
 
     if found and not agotado:
-        push = pb.push_link(
+        pb.push_link(
             title="✅🎫 HAY ENTRADAS YA! ENTRA AHORA.",
             url="https://www.allaccess.com.ar/event/oasis"
         )
