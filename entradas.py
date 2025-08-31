@@ -33,7 +33,7 @@ driver = webdriver.Chrome(options=options)
 print("Iniciando proceso")
 
 try:
-    ahora = datetime.now(pytz.timezone('America/Buenos_Aires')) - timedelta(hours=3)
+    ahora = datetime.datetime.now(pytz.timezone('America/Buenos_Aires')) - timedelta(hours=3)
     timestamp = ahora.strftime("%d%m%Y - %H:%M:%S")
 
     driver.get("https://www.allaccess.com.ar/event/oasis")
