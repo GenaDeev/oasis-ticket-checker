@@ -33,7 +33,7 @@ print("Iniciando proceso")
 
 try:
     ahora = datetime.datetime.now(pytz.timezone('America/Buenos_Aires'))
-    timestamp = ahora.strftime("%d%m%Y - %H:%M:%S")
+    timestamp = ahora.strftime("%d/%m/%Y - %H:%M:%S")
 
     driver.get("https://www.allaccess.com.ar/event/oasis")
     time.sleep(2)
