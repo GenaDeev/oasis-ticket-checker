@@ -15,7 +15,7 @@ import pytz
 PB_API_KEY = os.environ.get("PB_API_KEY")
 pb = Pushbullet(PB_API_KEY)
 
-targetTarifaName = "campo general 1"
+targetTarifaName = os.environ.get("TARGET_TARIFA_NAME") or "campo general 1"
 MAX_RETRIES = 3
 WAIT_TIMEOUT = 15
 
