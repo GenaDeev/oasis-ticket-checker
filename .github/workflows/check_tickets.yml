@@ -4,6 +4,15 @@ on:
   schedule:
     - cron: "0 * * * *"
   workflow_dispatch:
+    inputs:
+      targetTarifaName:
+        description: "Seleccioná la tarifa"
+        required: false
+        default: "campo general 1"
+        type: choice
+        options:
+          - "campo general 1"
+          - "oasis colectors package"
 
 jobs:
   run-script:
@@ -34,5 +43,6 @@ jobs:
       - name: Run script
         env:
           PB_API_KEY: ${{ secrets.PB_API_KEY }}
+          TARGET_TARIFA_NAME: ${{ github.event.inputs.targetTarifaName || 'campo general 1' }}
         run: |
           python entradas.py
