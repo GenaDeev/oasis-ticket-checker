@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 import time
 import unicodedata
 from pushbullet import Pushbullet
@@ -17,7 +17,7 @@ pb = Pushbullet(PB_API_KEY)
 
 targetTarifaName = "campo general 1"
 MAX_RETRIES = 3
-WAIT_TIMEOUT = 15  # Aumentado el timeout de espera
+WAIT_TIMEOUT = 15
 
 def normalize(text: str) -> str:
     text = text.lower().strip()
@@ -34,24 +34,25 @@ def setup_driver():
     options.add_argument(f"--user-data-dir={tempfile.mkdtemp()}")
     options.add_argument("--disable-gpu")
     options.add_argument("--window-size=1920,1080")
+    options.add_argument("--disable-infobars")
+    options.add_argument("--disable-blink-features=AutomationControlled")
     return webdriver.Chrome(options=options)
 
+def click_via_js(driver, element):
+    driver.execute_script("arguments[0].click();", element)
+
 def wait_and_click_element(driver, wait, element_id=None, css_selector=None, xpath=None):
-    """
-    Espera a que el elemento sea clickeable y lo hace click
-    Retorna True si fue exitoso, False si falló
-    """
     try:
         if element_id:
-            element = wait.until(EC.element_to_be_clickable((By.ID, element_id)))
+            element = wait.until(EC.presence_of_element_located((By.ID, element_id)))
         elif css_selector:
-            element = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, css_selector)))
+            element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))
         elif xpath:
-            element = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
+            element = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
         else:
             return False
         
-        element.click()
+        click_via_js(driver, element)
         return True
     except TimeoutException:
         print(f"Timeout: No se pudo encontrar/clickear el elemento")
@@ -61,10 +62,6 @@ def wait_and_click_element(driver, wait, element_id=None, css_selector=None, xpa
         return False
 
 def check_tickets():
-    """
-    Función principal que verifica las entradas
-    Retorna True si el proceso fue exitoso, False si necesita reinicio
-    """
     driver = None
     try:
         ahora = datetime.datetime.now(pytz.timezone('America/Buenos_Aires'))
@@ -75,44 +72,42 @@ def check_tickets():
         
         print(f"[{timestamp}] Iniciando proceso...")
 
-        # Cargar la página principal
         driver.get("https://www.allaccess.com.ar/event/oasis")
-        time.sleep(3)
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
-        # Paso 1: Click en elemento con ID "75385"
+        # Paso 1
         print("Paso 1: Buscando elemento 75385...")
         if not wait_and_click_element(driver, wait, element_id="75385"):
-            print("Error en Paso 1: No se encontró el elemento 75385")
+            print("Error en Paso 1")
             return False
-        time.sleep(2)
+        time.sleep(1)
 
-        # Paso 2: Click en botón "buyButton"
+        # Paso 2
         print("Paso 2: Buscando buyButton...")
         if not wait_and_click_element(driver, wait, element_id="buyButton"):
-            print("Error en Paso 2: No se encontró buyButton")
+            print("Error en Paso 2")
             return False
-        time.sleep(3)
+        time.sleep(1)
 
-        # Paso 3: Click en elemento con data-value="218092"
+        # Paso 3
         print("Paso 3: Buscando elemento data-value='218092'...")
         if not wait_and_click_element(driver, wait, css_selector='[data-value="218092"]'):
-            print("Error en Paso 3: No se encontró el elemento data-value='218092'")
+            print("Error en Paso 3")
             return False
-        time.sleep(2)
+        time.sleep(1)
 
-        # Paso 4: Click en elemento con data-value="104358"
+        # Paso 4
         print("Paso 4: Buscando elemento data-value='104358'...")
         if not wait_and_click_element(driver, wait, css_selector='[data-value="104358"]'):
-            print("Error en Paso 4: No se encontró el elemento data-value='104358'")
+            print("Error en Paso 4")
             return False
-        time.sleep(4)
+        time.sleep(1)
 
-        # Paso 5: Extraer información de tarifas
+        # Paso 5: Extracción de tarifas (igual que tu original)
         print("Paso 5: Extrayendo información de tarifas...")
         try:
-            # Esperar a que aparezca el contenido
             wait.until(EC.presence_of_element_located((By.ID, "pickerContent")))
-            time.sleep(2)  # Espera adicional para asegurar que el contenido se cargue
+            time.sleep(1)
             
             tarifas_js = driver.execute_script("""
                 const list = document.getElementById("pickerContent");
@@ -185,7 +180,7 @@ while retry_count < MAX_RETRIES:
         else:
             retry_count += 1
             if retry_count < MAX_RETRIES:
-                wait_time = min(5 * retry_count, 15)  # Espera progresiva: 5s, 10s, 15s
+                wait_time = min(5 * retry_count, 15)
                 print(f"Reintento {retry_count}/{MAX_RETRIES} en {wait_time} segundos...")
                 time.sleep(wait_time)
             else:
