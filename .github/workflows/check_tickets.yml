@@ -12,7 +12,7 @@ on:
         type: choice
         options:
           - "campo general 1"
-          - "oasis colectors package"
+          - "oasis collectors package"
 
 jobs:
   run-script:
