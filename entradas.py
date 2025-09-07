@@ -153,6 +153,10 @@ def check_tickets():
             )
             print(f"[{timestamp}] Hay entradas disponibles en {targetTarifaName}. Notificado por Pushbullet.")
         elif found and agotado:
+            pb.push_link(
+                title="❕️🎫 OJO, APARECIO LA OPCION ELEGIDA PERO SIN STOCK AUN.",
+                url="https://www.allaccess.com.ar/event/oasis"
+            )
             print(f"[{timestamp}] {targetTarifaName} aparece en la lista, pero está agotado")
         else:
             print(f"[{timestamp}] {targetTarifaName} ni siquiera aparece en la lista")
