@@ -13,6 +13,7 @@ import datetime
 import os
 import tempfile
 import pytz
+import shutil
 
 load_dotenv()
 PB_API_KEY = os.getenv("PB_API_KEY") or ""
@@ -39,12 +40,27 @@ def normalize(text: str) -> str:
     return " ".join(text.split())
 
 
+CHROME_USER_DATA_DIR = os.path.join(os.getcwd(), "chrome_data")
+os.makedirs(CHROME_USER_DATA_DIR, exist_ok=True)
+
+
+def cleanup_chrome_cache():
+    cache_dir = os.path.join(CHROME_USER_DATA_DIR, "Default", "Cache")
+    if os.path.exists(cache_dir):
+        try:
+            shutil.rmtree(cache_dir)
+            os.makedirs(cache_dir)
+        except Exception as e:
+            log(f"⚠️ No se pudo limpiar cache: {e}")
+
+
 def setup_driver():
+    cleanup_chrome_cache()
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument(f"--user-data-dir={tempfile.mkdtemp()}")
+    options.add_argument(f"--user-data-dir={CHROME_USER_DATA_DIR}")
     options.add_argument("--disable-gpu")
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--disable-infobars")
