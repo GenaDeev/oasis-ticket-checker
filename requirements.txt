@@ -1,4 +1,4 @@
 selenium
 pushbullet.py
 pytz
-dotenv
+python-dotenv
