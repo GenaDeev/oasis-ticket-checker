@@ -168,6 +168,11 @@ def check_tickets():
                 f"✅ Hay entradas disponibles en {targetTarifaName}. Notificado por Pushbullet."
             )
         elif found and agotado:
+            if PB_API_KEY:
+                pb.push_link(
+                    title="❕️🎫 OJO, APARECIO LA OPCION ELEGIDA PERO SIN STOCK AUN.",
+                    url="https://www.allaccess.com.ar/event/oasis",
+                )
             log(f"⚠️ {targetTarifaName} aparece en la lista, pero está agotado")
         else:
             log(f"ℹ️ {targetTarifaName} no aparece en la lista")
