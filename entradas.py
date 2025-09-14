@@ -21,6 +21,8 @@ pb = None
 if PB_API_KEY:
     pb = Pushbullet(PB_API_KEY)
 
+HEADLESS = os.getenv("IS_HEADLESS", "true").lower() == "true"
+
 targetTarifaName = os.getenv("TARGET_TARIFA_NAME") or "campo general 1"
 MAX_RETRIES = 3
 WAIT_TIMEOUT = 15
@@ -57,7 +59,8 @@ def cleanup_chrome_cache():
 def setup_driver():
     cleanup_chrome_cache()
     options = Options()
-    options.add_argument("--headless=new")
+    if HEADLESS:
+        options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument(f"--user-data-dir={CHROME_USER_DATA_DIR}")
