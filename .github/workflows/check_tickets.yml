@@ -13,6 +13,14 @@ on:
         options:
           - "campo general 1"
           - "oasis collectors package"
+      isHeadless:
+        description: "Configuración del WebDriver"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
 
 jobs:
   run-script:
@@ -44,5 +52,6 @@ jobs:
         env:
           PB_API_KEY: ${{ secrets.PB_API_KEY }}
           TARGET_TARIFA_NAME: ${{ github.event.inputs.targetTarifaName || 'campo general 1' }}
+          IS_HEADLESS: ${{ github.event.inputs.isHeadless || 'true' }}
         run: |
           python entradas.py
