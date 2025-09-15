@@ -169,9 +169,12 @@ def check_tickets():
         normalizedTarget = normalize(targetTarifaName)
 
         for t in tarifas_js:
-            nombre = normalize(t["nombre"])
+            nombre = t["nombre"].strip()
             soldOut = t["soldOut"]
-            if nombre == normalizedTarget:
+            estado = "AGOTADO ❌" if soldOut else "DISPONIBLE ✅"
+            log(f"   • {nombre}: {estado}")
+
+            if normalize(nombre) == normalizedTarget:
                 found = True
                 if soldOut:
                     agotado = True
