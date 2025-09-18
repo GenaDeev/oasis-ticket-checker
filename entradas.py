@@ -16,10 +16,6 @@ import pytz
 import shutil
 
 load_dotenv()
-PB_API_KEY = os.getenv("PB_API_KEY") or ""
-pb = None
-if PB_API_KEY:
-    pb = Pushbullet(PB_API_KEY)
 
 HEADLESS = os.getenv("IS_HEADLESS", "true").lower() == "true"
 
@@ -104,6 +100,14 @@ def wait_and_click_element(
 
 
 def check_tickets():
+    PB_API_KEY = os.getenv("PB_API_KEY") or ""
+    pb = None
+    if PB_API_KEY:
+        pb = Pushbullet(PB_API_KEY)
+        log("📨✅ Pushbullet conectado")
+    else:
+        log("📨❌ Ejecutando sin Pushbullet")
+
     driver = None
     try:
         driver = setup_driver()
