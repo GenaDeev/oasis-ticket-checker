@@ -174,7 +174,7 @@ def check_tickets():
             estado = "AGOTADO ❌" if soldOut else "DISPONIBLE ✅"
             log(f"   • {nombre}: {estado}")
 
-            if normalize(nombre) == normalizedTarget:
+            if normalizedTarget in normalize(nombre):
                 found = True
                 if soldOut:
                     agotado = True
